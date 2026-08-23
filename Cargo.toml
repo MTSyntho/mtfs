@@ -1,0 +1,9 @@
+[profile.release]
+strip = true
+
+[workspace]
+members = [
+    "mtfs-core",
+    "mtfs-cli",
+]
+resolver = "2"
