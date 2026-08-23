@@ -1,5 +1,12 @@
 use log::{info, warn, error, debug};
 
+// pub mod metadata; why is it erroring out?
+
+#[path = "metadata.rs"] 
+pub mod metadata; 
+// pub use metadataf as metadata;
+
+
 pub fn format(data: &mut Vec<u8>, name: &str) {
     data.fill(0);
     // println!("{}", name);
