@@ -5,5 +5,6 @@ fn main() {
     mtfs::fs::format(&mut storage, "AXIUMCRISIS");
     // mtfs::fs::format(&mut storage, "こんにちわ みんなさん");
 
-    println!("Disk size: {}", mtfs::fs::metadata::get_size_mb(&storage));
+    println!("Disk name: {}", mtfs::fs::metadata::get_name(&storage));
+    println!("Disk size: {}MB", mtfs::fs::metadata::get_size_mb(&storage));
 }
