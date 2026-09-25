@@ -11,6 +11,9 @@ pub fn format(data: &mut Vec<u8>, name: &str) {
     data.fill(0);
     // println!("{}", name);
 
+    // Superblock Definition
+    // 
+
     // Create a buffer to store the buffer in, 32 bytes max.. might be generous
     let mut name_buffer = [0u8; 32];
     let encoded_name = name.as_bytes();
@@ -46,6 +49,31 @@ pub fn format(data: &mut Vec<u8>, name: &str) {
     data[53] = 0x74; // t
     data[54] = 0x66; // f
     data[55] = 0x73; // s
+
+    // Dedicated 8MB region to metadata region marking
+    // This basically in theory decreases write times as the library does not need to iterate through-
+    // the _whole_ disk just to find a metadata block with free slots. The library will know ahead of time what blocks are occupied-
+    // so it can skip them. Is it efficient... you're looking at someone's peculiar filesystem design so you tell me
+    data[56..8388608].fill(0); 
+
+    // Metadata block gen. logic
+    // MTFS works by chunking both file data and general metadata eveningly throughout the disk.
+    // Metadata chunks are 1048576 bytes in size ( 1mb ) and data regions are allocated 67108864 bytes ( 64mb )
+
+    const METADATA_SIZE: u64 = (1024 * 1024); // 1mb
+
+    let mut _metadata_region_count = 0;
+
+    for offset in (8388608u64..disk_size).step_by(65*1024*1024 as usize) {
+        let metadata_start = offset as usize;
+        let metadata_end = (offset + METADATA_SIZE).min(disk_size) as usize;
+
+        data[metadata_start..metadata_end].fill(0);
+        _metadata_region_count += 1;
+        println!("Written metadata chunk @ {}", metadata_start.to_string());
+    }
+
+    println!("Allocated metadata regions: {}", _metadata_region_count.to_string());
 
     println!("{}", disk_size.to_string());
     println!("{:?}", name_buffer);
